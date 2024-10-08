@@ -60,14 +60,3 @@ jobs:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
         run: |
           echo "Environment variables are set."
-
-
-          
-      - name: Deploy Backend to Render
-        uses: gh-actions-workflows/deploy-docker-render@v1.1
-        with:
-              deploy-hook: ${{ secrets.DEPLOY_HOOK_URL }}
-              image-url: ghcr.io/${{ steps.lowercase.outputs.repo }}:latest
-              render-api-key: ${{ secrets.RENDERAPI_KEY }}
-              wait-for-deployment: true
-    
