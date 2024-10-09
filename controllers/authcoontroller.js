@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const { v4: uuidv4 } = require('uuid');
 const  myMessageQueue  = require('../queues/queues');
 
 const authController = {
@@ -12,7 +13,6 @@ const authController = {
       const [user] = await User.create({
         first_name,
         last_name,
-        email,
         password: hashedPassword,
       });
       console.log("here is the user",user);
