@@ -53,7 +53,47 @@ const authController = {
 
   logout: async (req, res) => {
     try {
+      const token = req.headers.authorization.split(' ')[1];
+      await User.revokeToken(token);
+
+      const user = await User.findByToken(token);
+      await myMessageQueue.add('goodbye-email', {
+        to: user.email,
+        subject: 'Goodbye!',
+        text: `Goodbye ${user.first_name}, we hope to see you again soon!`,
+        html: `<h1>Goodbye, ${user.first_name}!</h1><p>We hope to see you again soon.</p>`,
+      }, {
+        delay: 5000,
+      });
+
       res.json({ message: 'Logged out successfully' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  forgotPassword: async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await User.findByEmail(email);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const resetToken = uuidv4();
+      await User.updateResetToken(user.id, resetToken);
+
+      // Send the reset password email
+      await myMessageQueue.add('reset-password-email', {
+        to: email,
+        subject: 'Reset Your Password',
+        text: `Click the following link to reset your password: https://postgres-workers.onrender.com/forgot-password?id=${resetToken}`,
+        html: `<p>Click the following link to reset your password: <a href="https://postgres-workers.onrender.com/forgot-password?id=${resetToken}">Reset Password</a></p>`,
+      }, {
+        delay: 5000,
+      });
+
+      res.json({ message: 'Password reset link sent to your email' });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -61,18 +101,22 @@ const authController = {
 
   resetPassword: async (req, res) => {
     try {
-      const { email, newPassword } = req.body;
-      const user = await User.findByEmail(email);
+      const { token, newPassword } = req.body;
+      const user = await User.findByResetToken(token);
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: 'Invalid or expired token' });
       }
+
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await User.updatePassword(user.id, hashedPassword);
+      await User.clearResetToken(user.id);
+
       res.json({ message: 'Password reset successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  },
+  }
+
 };
 
 module.exports = authController;
