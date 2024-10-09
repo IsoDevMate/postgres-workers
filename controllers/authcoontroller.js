@@ -81,6 +81,7 @@ const authController = {
       }
 
       const resetToken = uuidv4();
+      console.log("resetToken",resetToken);
       await User.updateResetToken(user.id, resetToken);
 
       // Send the reset password email
