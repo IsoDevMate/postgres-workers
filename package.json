@@ -6,7 +6,7 @@
   "scripts": {
     "migrate": "npx knex migrate:latest --knexfile db/knexfile.js",
     "seed": "npx knex seed:run --knexfile db/knexfile.js",
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "initmigration": "npx knex migrate:make init --migrations-directory db/migrations"
   },
   "keywords": [],
