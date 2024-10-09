@@ -13,6 +13,7 @@ exports.up = function(knex) {
         table.string('email').notNullable().unique();
         table.string('password').notNullable();
         table.string('reset_token').nullable();
+        table.string('token').nullable();
         table.timestamps(true, true);
       })
       .createTable('accounts', (table) => {
