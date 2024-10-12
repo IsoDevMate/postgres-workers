@@ -89,8 +89,8 @@ const authController = {
       await myMessageQueue.add('reset-password-email', {
         to: email,
         subject: 'Reset Your Password',
-        text: `Click the following link to reset your password: https://postgres-workers.onrender.com/forgot-password?id=${resetToken}`,
-        html: `<p>Click the following link to reset your password: <a href="https://postgres-workers.onrender.com/forgot-password?id=${resetToken}">Reset Password</a></p>`,
+        text: `Click the following link to reset your password: https://livestream-webui.vercel.app/forgot?id=${resetToken}`,
+        html: `<p>Click the following link to reset your password: <a href="https://livestream-webui.vercel.app/forgot?id=${resetToken}">Reset Password</a></p>`,
       }, {
         delay: 5000,
       });
