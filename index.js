@@ -8,6 +8,8 @@ const Arena = require('bull-arena');
 const { Queue } = require('bullmq');
 const checkDbConnection = require('./testDbConnection');
 const cron = require('node-cron');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
 const arenaConfig = Arena({ 
   BullMQ:Queue,
@@ -26,6 +28,17 @@ const arenaConfig = Arena({
 {
   disableListen: true,
 });
+
+const corsOptions = {
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: 'Content-Type, Authorization'
+};
+
+app.use(cors(corsOptions));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/queues', arenaConfig);
 
